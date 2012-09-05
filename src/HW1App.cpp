@@ -33,6 +33,8 @@ class HW1App : public AppBasic {
 	int mouseY2;
 	bool mouseMod;
 
+	int colorChange;
+
 	/**
 	* Creates a rectangle on the surface
 	* @param pixels The array of pixels to edit
@@ -55,6 +57,7 @@ class HW1App : public AppBasic {
 
 	/**
 	* Creates a rectangular area filled with a gradient from startColor to endColor
+	* Actually doesnt do a real gradient but visual effect is cool
 	* @param pixels The array of pixels to edit
 	* @param startX The X-coordinate of the top left corner of the rectangle
 	* @param startY The Y-coordinate of the top left corner of the rectangle
@@ -66,16 +69,20 @@ class HW1App : public AppBasic {
 	void makeGradient(uint8_t* pixels, int startX, int startY, int endX, int endY, Color8u startColor, Color8u endColor)
 	{
 		Color8u tempColor = startColor;
+		float tempRed = tempColor.r;
+		float tempGreen = tempColor.g;
+		float tempBlue = tempColor.b;
 
 		for(int x = startX; x < endX; x++){
+
 			if(tempColor.r != endColor.r){
-				tempColor.r += (tempColor.r < endColor.r) ? 5 : -5;
+				tempColor.r += (tempColor.r < endColor.r) ? (endX-startX)/10 : -(endX-startX)/10;
 			}
 			if(tempColor.g != endColor.g){
-				tempColor.g += (tempColor.g < endColor.g) ? 5 : -5;
+				tempColor.g += (tempColor.g < endColor.g) ? (endX-startX)/10 : -(endX-startX)/10;
 			}
 			if(tempColor.b != endColor.b){
-				tempColor.b += (tempColor.b < endColor.b) ? 5 : -5;
+				tempColor.b += (tempColor.b < endColor.b) ? (endX-startX)/10 : -(endX-startX)/10;
 			}
 
 			for(int y = startY; y < endY; y++){
@@ -201,15 +208,21 @@ void HW1App::setup()
 	blue = Color8u(0,0,255);
 	red = Color8u(255,0,0);
 	mouseMod = false;
+	colorChange = 0;
 
-	makeRectangle(data,0,0,800,600,black); //Fill window with black
-	makeRectangle(data, 750, 550, 800, 600, red);
-	makeGradient(data, 0, 0, 50, 50, blue, red);
+	//makeRectangle(data,0,0,800,600,black); //Fill window with black
+	//makeRectangle(data, 750, 550, 800, 600, red);
+	
 	//addTint(data,0,0,800,600,red); // Uncomment to add a tint, currently set to red
-	makeCopy(data,0,0,50,50,200,200,250,250);
-	blur(data);
+	//makeCopy(data,0,0,50,50,200,200,250,250);
+	//blur(data);
 }
-
+/**
+* Catches 2 mouse clicks and creates a rectangle between them
+* only draws a rectangle if first click is the top left point 
+* and second is the bottom right point of the rectangle
+* @param event A mouse event to allow interaction with the program
+**/
 void HW1App::mouseDown( MouseEvent event )
 {
 	//Sets bottom right coordinate of rectangle and draws it
@@ -231,6 +244,11 @@ void HW1App::mouseDown( MouseEvent event )
 
 void HW1App::update()
 {
+	colorChange += 2;
+	//Giving both colors colorChange as a parameter creates moving effect
+	//Leave one color parameter with non changing parameters to remove motion effect
+	//Counts for E.5 Animation
+	makeGradient(data, 0, 0, 800, 600, Color8u(0,255-colorChange, 0), Color8u(0,0,colorChange));
 }
 
 void HW1App::draw()
