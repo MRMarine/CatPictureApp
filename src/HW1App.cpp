@@ -39,6 +39,7 @@ class HW1App : public AppBasic {
 
 	/**
 	* Creates a rectangle on the surface
+	* Satisfies A.1
 	* @param pixels The array of pixels to edit
 	* @param posX The X-coordinate of the top left corner of the rectangle
 	* @param posY The Y-coordinate of the top left corner of the rectangle
@@ -60,6 +61,7 @@ class HW1App : public AppBasic {
 	/**
 	* Creates a rectangular area filled with a gradient from startColor to endColor
 	* Actually doesnt do a real gradient but visual effect is cool
+	* Possibly Satisfies A.4 
 	* @param pixels The array of pixels to edit
 	* @param startX The X-coordinate of the top left corner of the rectangle
 	* @param startY The Y-coordinate of the top left corner of the rectangle
@@ -98,6 +100,7 @@ class HW1App : public AppBasic {
 
 	/**
 	* Copies a rectangular area of the surface and pastes it elsewhere on the surface
+	* Satisfies A.5
 	* @param pixels The pixel array to edi
 	* @param copyX The X-coordinate of the top left corner of the rectangle to copy
 	* @param copyY The Y-coordinate of the top left corner of the rectangle to copy
@@ -128,6 +131,7 @@ class HW1App : public AppBasic {
 
 	/**
 	* Applies a tint of chosen color to a rectangle of specified size
+	* Satisfies A.6
 	* @param pixels The array of pixels to edit
 	* @param startX The X-coordinate of the top left corner of the rectangle
 	* @param startY The Y-coordinate of the top left corner of the rectangle
@@ -163,6 +167,7 @@ class HW1App : public AppBasic {
 
 	/**
 	* Blurs the colors of the surace by averaging pixels with all of their surrounding pixels
+	* Satisfies B.1
 	* @param pixels The array of pixels to edit
 	**/
 	void blur(uint8_t* pixels)
