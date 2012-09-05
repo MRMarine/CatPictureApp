@@ -21,6 +21,7 @@ class HW1App : public AppBasic {
 	Color8u blue;
 	Color8u red;
 	Color8u black;
+	Color8u green;
 
 	static const int kAppWidth=800; // Surface width
 	static const int kAppHeight=600; // Surface height
@@ -214,6 +215,7 @@ void HW1App::setup()
 	black = Color8u(0,0,0);
 	blue = Color8u(0,0,255);
 	red = Color8u(100,0,0);
+	green = Color8u(0,255,0);
 	mouseMod = false;
 	colorChange = 0;
 	colorMod = false;
