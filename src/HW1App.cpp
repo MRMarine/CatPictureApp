@@ -33,6 +33,8 @@ class HW1App : public AppBasic {
 	int mouseY2;
 	bool mouseMod;
 
+	int colorMod;
+
 	int colorChange;
 
 	/**
@@ -206,16 +208,26 @@ void HW1App::setup()
 	data = (*mySurface_).getData();
 	black = Color8u(0,0,0);
 	blue = Color8u(0,0,255);
-	red = Color8u(255,0,0);
+	red = Color8u(100,0,0);
 	mouseMod = false;
 	colorChange = 0;
+	colorMod = false;
 
+	makeGradient(data, 0, 0, 800, 600, Color8u(0,255, 0), Color8u(0,0,255));
+	makeGradient(data,0,0,200,200, Color8u(255,0,0), Color8u(0,255,0));
+	makeGradient(data,600,0,800,200, Color8u(255,255,0), Color8u(0,0,255));
+	makeGradient(data,200,200,600,400, Color8u(0,0,255), Color8u(255,0,0));
+	makeGradient(data,0,400,200,600, Color8u(100,50,0), Color8u(55,0,0));
+	makeGradient(data,600,400,800,600, Color8u(50,0,100), Color8u(0,0,50));
+	makeRectangle(data,200,0,600,200,blue);
+	makeRectangle(data,200,400,600,600,red);
 	//makeRectangle(data,0,0,800,600,black); //Fill window with black
 	//makeRectangle(data, 750, 550, 800, 600, red);
 	
 	//addTint(data,0,0,800,600,red); // Uncomment to add a tint, currently set to red
 	//makeCopy(data,0,0,50,50,200,200,250,250);
-	//blur(data);
+	blur(data);
+	cinder::writeImage("cseimage.png",*mySurface_);
 }
 /**
 * Catches 2 mouse clicks and creates a rectangle between them
@@ -244,16 +256,18 @@ void HW1App::mouseDown( MouseEvent event )
 
 void HW1App::update()
 {
-	colorChange += 2;
+	colorChange++;
 	//Giving both colors colorChange as a parameter creates moving effect
 	//Leave one color parameter with non changing parameters to remove motion effect
 	//Counts for E.5 Animation
-	makeGradient(data, 0, 0, 800, 600, Color8u(0,255-colorChange, 0), Color8u(0,0,colorChange));
+	//Note blur() slows down animation extremely
+	//makeGradient(data, 0, 0, 800, 600, Color8u(0,255-colorChange, 0), Color8u(0,0,colorChange));
 }
 
 void HW1App::draw()
 {
 	gl::draw(*mySurface_); 
+
 }
 
 CINDER_APP_BASIC( HW1App, RendererGl )
