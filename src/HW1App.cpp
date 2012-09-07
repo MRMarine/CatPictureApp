@@ -15,7 +15,9 @@ class HW1App : public AppBasic {
 	void update();
 	void draw();
 	void prepareSettings(Settings* settings);
+	
   private:
+	// nice sorting of variables.  They are neat and easy to read!
 	Surface* mySurface_;
 	uint8_t* data;
 	Color8u blue;
@@ -34,9 +36,9 @@ class HW1App : public AppBasic {
 	int mouseY2;
 	bool mouseMod;
 
-	int colorMod;
+	//int colorMod;
 
-	int colorChange;
+	//int colorChange;
 
 	/**
 	* Creates a rectangle on the surface
@@ -46,15 +48,16 @@ class HW1App : public AppBasic {
 	* @param posY The Y-coordinate of the top left corner of the rectangle
 	* @param endX The X-coordinate of the bottom right corner of the rectangle
 	* @param endY The Y-coordinate of the bottom right corner of the rectangle
-	* @param c The color to fill the rectangle
+	* @param color The color to fill the rectangle
 	**/
-	void makeRectangle(uint8_t* pixels, int posX, int posY, int endX, int endY, Color8u c)
+	void makeRectangle(uint8_t* pixels, int posX, int posY, int endX, int endY, Color8u color)
 	{
 		for(int x = posX; x < endX; x++){
 			for(int y = posY; y < endY; y++){
-				pixels[3*(x + y*kTextureSize)] = c.r;
-				pixels[3*(x + y*kTextureSize)+1] = c.g;
-				pixels[3*(x + y*kTextureSize)+2] = c.b;
+				int offset = 3*(x + y*kTextureSize);
+				pixels[offset] = color.r;
+				pixels[offset + 1] = color.g;
+				pixels[offset + 2] = color.b;
 			}
 		}
 	}
@@ -91,10 +94,10 @@ class HW1App : public AppBasic {
 			}
 
 			for(int y = startY; y < endY; y++){
-
-				pixels[3*(x + y*kTextureSize)] = tempColor.r;
-				pixels[3*(x + y*kTextureSize)+1] = tempColor.g;
-				pixels[3*(x + y*kTextureSize)+2] = tempColor.b;
+				int offset = 3*(x + y*kTextureSize);
+				pixels[offset] = tempColor.r;
+				pixels[offset + 1] = tempColor.g;
+				pixels[offset + 2] = tempColor.b;
 			}
 		}
 	}
@@ -116,9 +119,12 @@ class HW1App : public AppBasic {
 		int tempY = posY;
 		for(int x = copyX; x < copyX2; x++){
 			for(int y = copyY; y < copyY2; y++){
-				pixels[3*(posX + posY*kTextureSize)] = pixels[3*(x + y*kTextureSize)];
-				pixels[3*(posX + posY*kTextureSize)+1] = pixels[3*(x + y*kTextureSize)+1];
-				pixels[3*(posX + posY*kTextureSize)+2] = pixels[3*(x + y*kTextureSize)+2];
+				int offset = 3*(posX + posY*kTextureSize);
+
+				pixels[offset] = pixels[offset];
+				pixels[offset+1] = pixels[offset + 1];
+				pixels[offset+2] = pixels[offset + 2];
+
 				posY += 1;
 				if(posY >= endY){
 					posY = tempY;
@@ -144,23 +150,25 @@ class HW1App : public AppBasic {
 	{
 		for(int x = startX; x < startX + endX; x++){
 			for(int y = startY; y < startY + endY; y++){
-				if((pixels[3*(x + y*kTextureSize)] + color.r) > 255){
-					pixels[3*(x + y*kTextureSize)] = 255;
+				int offset = 3*(x + y*kTextureSize);
+
+				if((pixels[offset] + color.r) > 255){
+					pixels[offset] = 255;
 				}
 				else{
-					pixels[3*(x + y*kTextureSize)] += color.r;
+					pixels[offset] += color.r;
 				}
-				if((pixels[3*(x + y*kTextureSize)+1] + color.g) > 255){
-					pixels[3*(x + y*kTextureSize)+1] = 255;
-				}
-				else{
-					pixels[3*(x + y*kTextureSize)+1] += color.g;
-				}
-				if((pixels[3*(x + y*kTextureSize)+2] + color.b) > 255){
-					pixels[3*(x + y*kTextureSize)+2] = 255;
+				if((pixels[offset+1] + color.g) > 255){
+					pixels[offset+1] = 255;
 				}
 				else{
-					pixels[3*(x + y*kTextureSize)+2] += color.b;
+					pixels[offset+1] += color.g;
+				}
+				if((pixels[offset+2] + color.b) > 255){
+					pixels[offset+2] = 255;
+				}
+				else{
+					pixels[offset+2] += color.b;
 				}
 			}
 		}	
@@ -178,23 +186,38 @@ class HW1App : public AppBasic {
 		int sumB = 0;
 		float kernal[] = {1/9.0, 1/9.0, 1/9.0, 1/9.0, 1/9.0, 1/9.0, 1/9.0, 1/9.0, 1/9.0};
 
-		for(int x = 1; x < 799; x++){
-			for(int y = 1; y < 599; y++){
+		// You shouldn't use arbitrary numbers in for loop.
+		// If the values make sense for what you're doing, it's fine, but 799 and 599 only make sense if you know kAppWidth and kAppHeight
+		// If kAppWidth and kAppHeight are ever changed, using 799 and 599 in a for loop is a liability, especially if the surface size is reduced as well.
+		// If it is related to a constant, use that constant and add, subtract, etc. as you would to get the number you would otherwise need. It is safer and makes more sense to readers
+		for(int x = 1; x < kAppWidth - 1; x++){
+			for(int y = 1; y < kAppHeight - 1; y++){
+				// I recommend nesting these in two additional for loops (like the two just below this) and use variables to hold everything in square brackets.
+				// It took me a while to see what you were doing here, as well as a few seconds to come to terms with seeing a huge block of mostly unorganized text.
+				// A plus of restructuring this is that if you were to use a kernel that wasn't identical across all values, it could do other convolution-based filter effects.
+
+				// I'm actually afraid to restructure this for you for fear of breaking something I can't see running in your app as it is.
+
 				sumR = (pixels[3*((x-1) + (y-1)*kTextureSize)] + pixels[3*(x + (y-1)*kTextureSize)] + pixels[3*((x+1) + (y-1)*kTextureSize)] +
 					pixels[3*((x-1) + y*kTextureSize)] + pixels[3*(x + y*kTextureSize)] + pixels[3*((x+1) + y*kTextureSize)] + 
 					pixels[3*((x-1) + (y+1)*kTextureSize)] + pixels[3*(x + (y+1)*kTextureSize)] + pixels[3*((x+1) + (y+1)*kTextureSize)]);
+
 				sumG = (pixels[3*((x-1) + (y-1)*kTextureSize)+1] + pixels[3*(x + (y-1)*kTextureSize)+1] + pixels[3*((x+1) + (y-1)*kTextureSize)+1] +
 					pixels[3*((x-1) + y*kTextureSize)+1] + pixels[3*(x + y*kTextureSize)+1] + pixels[3*((x+1) + y*kTextureSize)+1] + 
 					pixels[3*((x-1) + (y+1)*kTextureSize)+1] + pixels[3*(x + (y+1)*kTextureSize)+1] + pixels[3*((x+1) + (y+1)*kTextureSize)+1]);
+
 				sumB = (pixels[3*((x-1) + (y-1)*kTextureSize)+2] + pixels[3*(x + (y-1)*kTextureSize)+2] + pixels[3*((x+1) + (y-1)*kTextureSize)+2] +
 					pixels[3*((x-1) + y*kTextureSize)+2] + pixels[3*(x + y*kTextureSize)+2] + pixels[3*((x+1) + y*kTextureSize)+2] + 
 					pixels[3*((x-1) + (y+1)*kTextureSize)+2] + pixels[3*(x + (y+1)*kTextureSize)+2] + pixels[3*((x+1) + (y+1)*kTextureSize)+2]);
 				
 				for(int i = -1; i < 2; i++){
 					for(int j = -1; j < 2; j++){
-						pixels[3*((x + j) + (y + i)*kTextureSize)] = sumR * kernal[(i+1) + (j+1)];
-						pixels[3*((x + j) + (y + i)*kTextureSize)+1] = sumG * kernal[(i+1) + (j+1)];
-						pixels[3*((x + j) + (y + i)*kTextureSize)+2] = sumB * kernal[(i+1) + (j+1)];
+						int offset = 3*((x + j) + (y + i)*kTextureSize);
+						int kOffset = (i+1) + (j+1);
+
+						pixels[offset] = sumR * kernal[kOffset];
+						pixels[offset + 1] = sumG * kernal[kOffset];
+						pixels[offset + 2] = sumB * kernal[kOffset];
 					}
 				}
 			}
@@ -207,7 +230,9 @@ void HW1App::prepareSettings(Settings* settings){
 	(*settings).setResizable(false);
 }
 
-
+/**
+	* Performs the initializations needed to get the app ready to run.
+	**/
 void HW1App::setup()
 {
 	mySurface_ = new Surface(kTextureSize,kTextureSize,false);
@@ -217,8 +242,11 @@ void HW1App::setup()
 	red = Color8u(100,0,0);
 	green = Color8u(0,255,0);
 	mouseMod = false;
-	colorChange = 0;
-	colorMod = false;
+	
+	/* These two variables are commented out because they don't do anything
+		but might be useful later on or for an unimplemented method */
+	//colorChange = 0;
+	//colorMod = false;
 
 	makeGradient(data, 0, 0, 800, 600, Color8u(0,255, 0), Color8u(0,0,255));
 	makeGradient(data,0,0,200,200, Color8u(255,0,0), Color8u(0,255,0));
@@ -244,6 +272,9 @@ void HW1App::setup()
 **/
 void HW1App::mouseDown( MouseEvent event )
 {
+	// is there a way to make mouseX2, mouse Y2 values changed to mouseX1, mouseY1 if they do not draw anything in makeRectangle()?
+	// I had to read through the source code to find out why things were only happening some of the time even when I was clicking below and to the right of my previous click
+
 	//Sets bottom right coordinate of rectangle and draws it
 	//Color is currently set to blue
 	if(event.isLeft() && mouseMod){
@@ -260,10 +291,14 @@ void HW1App::mouseDown( MouseEvent event )
 		return;
 	}
 }
-
+/**
+* Updates the app before the draw method is called.
+* It currently does nothing
+**/
 void HW1App::update()
 {
-	colorChange++;
+	// colorChange has been commented out because it was never used and there was no sense allocating memory that would never be used
+	//colorChange++;
 	//Giving both colors colorChange as a parameter creates moving effect
 	//Leave one color parameter with non changing parameters to remove motion effect
 	//Counts for E.5 Animation
@@ -271,6 +306,9 @@ void HW1App::update()
 	//makeGradient(data, 0, 0, 800, 600, Color8u(0,255-colorChange, 0), Color8u(0,0,colorChange));
 }
 
+/**
+* Draws the surface to the screen
+**/
 void HW1App::draw()
 {
 	gl::draw(*mySurface_); 
